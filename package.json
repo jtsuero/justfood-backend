@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/jtsuero/dishup-backend#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "yelp-fusion": "^3.0.0"
   }
 }
