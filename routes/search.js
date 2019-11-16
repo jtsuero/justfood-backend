@@ -1,4 +1,4 @@
-const express = require('express'); //these needed?
+const express = require('express');
 const router = express.Router();
 
 const yelp = require('yelp-fusion');
@@ -8,14 +8,13 @@ const client = yelp.client(API_key);
 router.get('/', async (req, res) => {
   try {
     client.search({
-      latitude: '47.608013',
-      longitude: '-122.335167', //seattle long and lat in degrees and minutes
-      radius: 8000 //search is in meters
-    }).then(response => {
-      console.log(response.jsonBody.businesses);
-      console.log(response.jsonBody.businesses.length);
+      latitude: req.query.lat,
+      longitude: req.query.long,
+      radius: req.query.radius
+    }).then(restaurants => {
+      res.status(200).json(restaurants);
     }).catch(e => {
-      console.log(e);
+      res.status(400).json(e);
     });
 
   } catch (err) {
