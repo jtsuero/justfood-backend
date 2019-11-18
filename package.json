@@ -19,5 +19,10 @@
   "dependencies": {
     "express": "^4.17.1",
     "yelp-fusion": "^3.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^6.2.2",
+    "supertest": "^4.0.2"
   }
 }

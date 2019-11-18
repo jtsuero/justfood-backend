@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
+'use strict';
 const yelp = require('yelp-fusion');
 const API_key = 'r1vbEMtp8IBHtXAGam3bzbj7UTc3yEfmd6tRnfcc7L14ezrh-HlwjfSAefD6pNYa1vPHGKyPHvXL4uSIapALyPuvTE9PXCEYpofz4nnNj7YXNJZTYyyaLPanDB7OXXYx'
 const client = yelp.client(API_key);
@@ -12,7 +13,7 @@ router.get('/', async (req, res) => {
       longitude: req.query.long,
       radius: req.query.radius
     }).then(restaurants => {
-      res.status(200).json(restaurants);
+      res.status(200).json(restaurants.jsonBody);
     }).catch(e => {
       res.status(400).json(e);
     });

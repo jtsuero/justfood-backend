@@ -8,3 +8,5 @@ const searchRoute = require('./routes/search');
 app.use('/search', searchRoute);
 
 app.listen(3000, () => console.log('Server up and running'));
+
+module.exports = app;
