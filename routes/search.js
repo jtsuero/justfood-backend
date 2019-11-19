@@ -12,8 +12,11 @@ router.get('/', async (req, res) => {
       latitude: req.query.lat,
       longitude: req.query.long,
       radius: req.query.radius
-    }).then(restaurants => {
-      res.status(200).json(restaurants.jsonBody);
+    }).then(yelpResponse => {
+      const restaurants = transformRestaurants(yelpResponse.jsonBody.businesses);
+      res.status(200).json({
+        businesses: restaurants,
+      });
     }).catch(e => {
       res.status(400).json(e);
     });
@@ -22,5 +25,15 @@ router.get('/', async (req, res) => {
     res.status(400).json({message: err});
   }
   });
+
+  function transformRestaurants(yelpRestaurants) {
+    return yelpRestaurants.map((restaurant) => {
+      return {
+        id: restaurant.id,
+        name: restaurant.name,
+        yelp_url: restaurant.url,
+      };
+    })
+  }
 
 module.exports = router;

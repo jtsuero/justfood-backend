@@ -11,6 +11,7 @@ describe("search", function(done) {
         res.body.businesses.forEach((business) => {
           assert.isString(business.id)
           assert.isString(business.name)
+          assert.isString(business.yelp_url)
         })
       })
   });
