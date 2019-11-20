@@ -9,6 +9,7 @@ const client = yelp.client(API_key);
 router.get('/', async (req, res) => {
   try {
     client.search({
+      term: req.query.term,
       latitude: req.query.lat,
       longitude: req.query.long,
       radius: req.query.radius
