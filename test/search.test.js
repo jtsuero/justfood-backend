@@ -14,5 +14,7 @@ describe("search", function(done) {
           assert.isString(business.yelp_url)
         })
       })
+      .expect(business.photos.to.have.lengthOf(3))
+      .expect(business.hours.to.have.lengthOf(7))
   });
 })
