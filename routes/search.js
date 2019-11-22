@@ -14,6 +14,7 @@ router.get('/', async (req, res) => {
       longitude: req.query.long,
       radius: req.query.radius,
       limit: req.query.limit,
+      offset: req.query.offset,
     })
     .then(yelpResponse => {
       transformRestaurants(yelpResponse.jsonBody.businesses)
