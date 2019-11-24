@@ -2,10 +2,10 @@ const express = require('express');
 const app = express();
 
 //Import Routes
-const searchRoute = require('./routes/search');
+const placesRoute = require('./routes/places');
 
 //Routes
-app.use('/search', searchRoute);
+app.use('/places', placesRoute);
 
 app.listen(3000, () => console.log('Server up and running'));
 
