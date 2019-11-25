@@ -24,7 +24,7 @@ describe('places', function() {
 })
 
 describe('places missing lat/long', function() {
-  it('returns \'Error: Longitude and Latitude required\'', function() {
+  it('returns "Error: Longitude and Latitude required"', function() {
     return request(app).get(`/places/?radius=${radius}&limit=${resultsNumber}`)
       .expect(400)
       .expect(function(res) {
@@ -34,7 +34,7 @@ describe('places missing lat/long', function() {
 });
 
 describe('places missing lat', function() {
-  it('returns \'Error: Longitude and Latitude required\'', function() {
+  it('returns "Error: Longitude and Latitude required"', function() {
     return request(app).get(`/places/?long=${longitude}&radius=${radius}&limit=${resultsNumber}`)
       .expect(400)
       .expect(function(res) {
@@ -44,7 +44,7 @@ describe('places missing lat', function() {
 });
 
 describe('places missing long', function() {
-  it('returns \'Error: Longitude and Latitude required\'', function() {
+  it('returns "Error: Longitude and Latitude required"', function() {
     return request(app).get(`/places/?lat=${latitude}&radius=${radius}&limit=${resultsNumber}`)
       .expect(400)
       .expect(function(res) {
