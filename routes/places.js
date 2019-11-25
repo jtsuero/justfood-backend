@@ -12,7 +12,7 @@ router.get('/', async (req, res) => {
       throw new Error('Error: Longitude and Latitude required');
     }
     client.search({
-      term: req.query.term,
+      term: "food",
       latitude: req.query.lat,
       longitude: req.query.long,
       radius: req.query.radius,
