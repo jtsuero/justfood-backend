@@ -7,7 +7,7 @@ const latitude = 47.608013;
 const searchTerm = "food";
 const radius = 8000;
 
-describe("places", function(done) {
+describe("places", function() {
   it("returns json list of businesses based on long and lat", function() {
     return request(app).get(`/places/?long=${longitude}&lat=${latitude}&radius=${radius}&term=${searchTerm}&limit=${resultsNumber}`)
       .expect(200)
@@ -24,7 +24,7 @@ describe("places", function(done) {
   });
 })
 
-describe("places missing lat/long", function(done) {
+describe("places missing lat/long", function() {
   it("returns \"Error: Longitude and Latitude required\"", function() {
     return request(app).get(`/places/?radius=${radius}&term=${searchTerm}&limit=${resultsNumber}`)
       .expect(400)
@@ -34,7 +34,7 @@ describe("places missing lat/long", function(done) {
   })
 });
 
-describe("places missing lat", function(done) {
+describe("places missing lat", function() {
   it("returns \"Error: Longitude and Latitude required\"", function() {
     return request(app).get(`/places/?long=${longitude}&radius=${radius}&term=${searchTerm}&limit=${resultsNumber}`)
       .expect(400)
@@ -44,7 +44,7 @@ describe("places missing lat", function(done) {
   })
 });
 
-describe("places missing long", function(done) {
+describe("places missing long", function() {
   it("returns \"Error: Longitude and Latitude required\"", function() {
     return request(app).get(`/places/?lat=${latitude}&radius=${radius}&term=${searchTerm}&limit=${resultsNumber}`)
       .expect(400)

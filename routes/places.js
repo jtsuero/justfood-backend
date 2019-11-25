@@ -9,7 +9,7 @@ const client = yelp.client(API_key);
 router.get('/', async (req, res) => {
   try {
     if(req.query.long === undefined || req.query.lat === undefined) {
-      throw new Error('Longitude and Latitude required');
+      throw new Error('Error: Longitude and Latitude required');
     }
     client.search({
       term: req.query.term,
@@ -19,18 +19,18 @@ router.get('/', async (req, res) => {
       limit: req.query.limit,
       offset: req.query.offset,
     })
-    .then(yelpResponse => {
-      transformRestaurants(yelpResponse.jsonBody.businesses)
-      .then(restaurants => {
-        res.status(200).json({
-          businesses: restaurants,
-        });
+      .then(yelpResponse => {
+        transformRestaurants(yelpResponse.jsonBody.businesses)
+          .then(restaurants => {
+            res.status(200).json({
+              businesses: restaurants,
+            });
+          });
+      }).catch(e => {
+        res.status(400).json(e);
       });
-    }).catch(e => {
-      res.status(400).json(e);
-    });
   } catch (err) {
-    res.status(400).json({message: err.toString()});
+    res.status(400).json({message: err.message});
   }
 });
 
