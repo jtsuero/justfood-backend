@@ -44,6 +44,7 @@ function transformRestaurants(yelpRestaurants) {
           yelp_url: response.jsonBody.url,
           photos: response.jsonBody.photos,
           hours: response.jsonBody.hours,
+          coordinates: response.jsonBody.coordinates,
         };
       }).catch(e => {
         console.log(e);
