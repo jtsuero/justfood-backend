@@ -1,7 +1,8 @@
+require('dotenv/config');
 const express = require('express');
 const router = express.Router();
 const client = require('@google/maps').createClient({
-  key: 'AIzaSyAOnWbA4sdxRvMQWHg_AzoJwB9MBmfe2Qo',
+  key: process.env.API_KEY,
 	Promise: Promise,
 });
 
