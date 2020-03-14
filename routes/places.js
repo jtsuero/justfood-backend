@@ -34,6 +34,36 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/yelp', async (req, res) => {
+  try {
+    client.businessMatch({
+      name: req.query.name,
+      address1: req.query.address,
+      city: req.query.city,
+      state: req.query.state,
+      country: 'US',
+      phone: req.query.phone,
+      latitude: req.query.lat,
+      longitude: req.query.lng,
+    })
+      .then(yelpResponse => {
+        console.log(yelpResponse.jsonBody.businesses);
+        if(yelpResponse.jsonBody.businesses.length === 0) {
+          return null
+        }
+        transformRestaurants(yelpResponse.jsonBody.businesses)
+          .then(yelpTransformed => {
+            console.log(yelpTransformed);
+            res.status(200).json({businessInfo: yelpTransformed})
+          })
+      }).catch(e => {
+        res.status(400).json(e);
+      });
+  } catch (err) {
+    res.status(400).json({message: err.message});
+  }
+});
+
 function transformRestaurants(yelpRestaurants) {
   const businessRequests = yelpRestaurants.map((restaurant) => {
     return client.business(restaurant.id)
