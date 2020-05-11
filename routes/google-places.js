@@ -1,59 +1,63 @@
-require('dotenv/config');
-const express = require('express');
+require("dotenv/config");
+const express = require("express");
 const router = express.Router();
-const client = require('@google/maps').createClient({
+const client = require("@google/maps").createClient({
   key: process.env.API_KEY,
-  Promise: Promise,
+  Promise: Promise
 });
 
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
-    if(req.query.long === undefined || req.query.lat === undefined) {
-      throw new Error('Error: Longitude and Latitude required');
+    if (req.query.long === undefined || req.query.lat === undefined) {
+      throw new Error("Error: Longitude and Latitude required");
     }
-    return client.placesNearby({
-      language: 'en',
-      location: [req.query.lat, req.query.long],
-      radius: 5000,
-      opennow: true,
-      type: 'restaurant',
-    })
+    return client
+      .placesNearby({
+        language: "en",
+        location: [req.query.lat, req.query.long],
+        radius: parseInt(req.query.radius),
+        opennow: true,
+        keyword: req.query.keyword,
+        type: "restaurant"
+      })
       .asPromise()
-      .then((googleResponse) => {
-        transformRestaurants(googleResponse.json.results)
-          .then(restaurants => res.json({businesses: restaurants}))
+      .then(googleResponse => {
+        transformRestaurants(googleResponse.json.results).then(restaurants =>
+          res.json({ businesses: restaurants })
+        );
       })
       .catch(e => console.log(e));
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({ message: err.message });
   }
 });
 
-router.get('/photos', async (req, res) => {
+router.get("/photos", async (req, res) => {
   try {
-    return client.placesPhoto({
-      photoreference: req.query.photoreference,
-      maxwidth: 400,
-      maxheight: 400,
-    })
+    return client
+      .placesPhoto({
+        photoreference: req.query.photoreference,
+        maxwidth: 400,
+        maxheight: 400
+      })
       .asPromise()
-      .then((photo) => {
+      .then(photo => {
         let photoURL = "https://" + photo.req.socket._host + photo.req.path;
-        res.send(photoURL)
+        res.send(photoURL);
       })
       .catch(e => console.log(e));
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({ message: err.message });
   }
 });
-
 
 function transformRestaurants(openRestaurants) {
-  const businessRequests = openRestaurants.map((restaurant) => {
-    return client.place({
-      placeid: restaurant.place_id,
-      language: 'en',
-    })
+  const businessRequests = openRestaurants.map(restaurant => {
+    return client
+      .place({
+        placeid: restaurant.place_id,
+        language: "en"
+      })
       .asPromise()
       .then(restaurants => {
         return {
@@ -66,30 +70,31 @@ function transformRestaurants(openRestaurants) {
           photos: restaurants.json.result.photos,
           open_now: restaurants.json.result.opening_hours.open_now,
           coordinates: restaurants.json.result.geometry.location,
-          website: restaurants.json.result.website,
+          website: restaurants.json.result.website
         };
       })
       .catch(e => {
         console.log(e);
       });
-  })
-  return Promise.all(businessRequests)
+  });
+  return Promise.all(businessRequests);
 }
 
 function getPhotoLinks(restaurants) {
-  const photoLinks = restaurants.json.result.photos.map((photo) => {
-    return client.placesPhoto({
-      photoreference: photo.photo_reference,
-      maxwidth: 400,
-      maxheight: 400,
-    })
+  const photoLinks = restaurants.json.result.photos.map(photo => {
+    return client
+      .placesPhoto({
+        photoreference: photo.photo_reference,
+        maxwidth: 400,
+        maxheight: 400
+      })
       .asPromise()
-      .then((photo) => {
+      .then(photo => {
         let photoURL = "https://" + photo.req.socket._host + photo.req.path;
-        return restaurants.json.result.photos.photo_reference = photoURL;
+        return (restaurants.json.result.photos.photo_reference = photoURL);
       })
       .catch(e => console.log(e));
-  })
+  });
 }
 
 module.exports = router;
