@@ -13,6 +13,9 @@ const placesRoute = require('./routes/places');
 const googleRoute = require('./routes/google-places');
 
 app.use(cors({origin: corsEnvironment}));
+app.use('/', (req, res) => {
+  res.sendStatus(200);
+});
 app.use('/places', placesRoute);
 app.use('/restaurants', googleRoute);
 
