@@ -5,7 +5,7 @@ const cors = require('cors');
 const PORT = process.env.PORT || 8000;
 const corsEnvironment =
   process.env.NODE_ENV === 'production'
-    ? 'http://justfood.me'
+    ? 'https://justfood.me'
     : 'http://localhost:3000';
 
 //Import Routes
