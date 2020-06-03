@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
           res.json({businesses: restaurants}),
         );
       })
-      .catch(e => console.log(e));
+      .catch(e => res.status(400).json({message: e.message}));
   } catch (err) {
     res.status(400).json({message: err.message});
   }
@@ -46,7 +46,7 @@ router.get('/place', async (req, res) => {
       .then(googleResponse => {
         res.json({business: googleResponse});
       })
-      .catch(e => console.log(e));
+      .catch(e => res.status(400).json({message: e.message}));
   } catch (err) {
     res.status(400).json({message: err.message});
   }
@@ -69,7 +69,7 @@ router.get('/photos', async (req, res) => {
   } catch (err) {
     res.status(400).json({message: err.message});
   }
-});
+}
 
 function transformRestaurants(openRestaurants) {
   const businessRequests = openRestaurants.map(restaurant => {
@@ -79,7 +79,7 @@ function transformRestaurants(openRestaurants) {
         language: 'en',
       })
       .asPromise()
-      .then(restaurants => {
+      .then(restaurant => {
         return {
           id: restaurants.json.result.place_id,
           address: restaurants.json.result.formatted_address,
@@ -93,9 +93,7 @@ function transformRestaurants(openRestaurants) {
           website: restaurants.json.result.website,
         };
       })
-      .catch(e => {
-        console.log(e);
-      });
+      .catch(e => console.log({message: e.message}));
   });
   return Promise.all(businessRequests);
 }
