@@ -90,21 +90,4 @@ function transformRestaurants(openRestaurants) {
   return Promise.all(businessRequests);
 }
 
-function getPhotoLinks(restaurants) {
-  const photoLinks = restaurants.json.result.photos.map(photo => {
-    return client
-      .placesPhoto({
-        photoreference: photo.photo_reference,
-        maxwidth: 400,
-        maxheight: 400,
-      })
-      .asPromise()
-      .then(photo => {
-        let photoURL = 'https://' + photo.req.socket._host + photo.req.path;
-        return (restaurants.json.result.photos.photo_reference = photoURL);
-      })
-      .catch(e => console.log(e));
-  });
-}
-
 module.exports = router;
