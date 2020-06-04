@@ -26,7 +26,7 @@ router.get('/', async (req, res) => {
           res.json({businesses: restaurants}),
         );
       })
-      .catch(e => console.log(e));
+      .catch(e => res.status(400).json({message: e.message}));
   } catch (err) {
     res.status(400).json({message: err.message});
   }
@@ -44,32 +44,24 @@ router.get('/place', async (req, res) => {
       })
       .asPromise()
       .then(googleResponse => {
+        let photoUrlArray = getBusinessPhotos(googleResponse);
+        googleResponse.json.result.photos = photoUrlArray;
         res.json({business: googleResponse});
       })
-      .catch(e => console.log(e));
+      .catch(e => res.status(400).json({message: e.message}));
   } catch (err) {
     res.status(400).json({message: err.message});
   }
 });
 
-router.get('/photos', async (req, res) => {
-  try {
-    return client
-      .placesPhoto({
-        photoreference: req.query.photoreference,
-        maxwidth: 400,
-        maxheight: 400,
-      })
-      .asPromise()
-      .then(photo => {
-        let photoURL = 'https://' + photo.req.socket._host + photo.req.path;
-        res.send(photoURL);
-      })
-      .catch(e => console.log(e));
-  } catch (err) {
-    res.status(400).json({message: err.message});
+function getBusinessPhotos(business) {
+  if (business.json.result.photos) {
+    const businessPhotos = business.json.result.photos.map(photoProp => {
+      return `https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&photoreference=${photoProp.photo_reference}&key=${process.env.API_KEY}`;
+    });
+    return businessPhotos;
   }
-});
+}
 
 function transformRestaurants(openRestaurants) {
   const businessRequests = openRestaurants.map(restaurant => {
@@ -79,42 +71,23 @@ function transformRestaurants(openRestaurants) {
         language: 'en',
       })
       .asPromise()
-      .then(restaurants => {
+      .then(restaurant => {
         return {
-          id: restaurants.json.result.place_id,
-          address: restaurants.json.result.formatted_address,
-          phone: restaurants.json.result.formatted_phone_number,
-          int_phone: restaurants.json.result.international_phone_number,
-          hours: restaurants.json.result.opening_hours.weekday_text,
-          name: restaurants.json.result.name,
-          photos: restaurants.json.result.photos,
-          open_now: restaurants.json.result.opening_hours.open_now,
-          coordinates: restaurants.json.result.geometry.location,
-          website: restaurants.json.result.website,
+          id: restaurant.json.result.place_id,
+          address: restaurant.json.result.formatted_address,
+          phone: restaurant.json.result.formatted_phone_number,
+          int_phone: restaurant.json.result.international_phone_number,
+          hours: restaurant.json.result.opening_hours.weekday_text,
+          name: restaurant.json.result.name,
+          photos: getBusinessPhotos(restaurant),
+          open_now: restaurant.json.result.opening_hours.open_now,
+          coordinates: restaurant.json.result.geometry.location,
+          website: restaurant.json.result.website,
         };
       })
-      .catch(e => {
-        console.log(e);
-      });
+      .catch(e => console.log({message: e.message}));
   });
   return Promise.all(businessRequests);
-}
-
-function getPhotoLinks(restaurants) {
-  const photoLinks = restaurants.json.result.photos.map(photo => {
-    return client
-      .placesPhoto({
-        photoreference: photo.photo_reference,
-        maxwidth: 400,
-        maxheight: 400,
-      })
-      .asPromise()
-      .then(photo => {
-        let photoURL = 'https://' + photo.req.socket._host + photo.req.path;
-        return (restaurants.json.result.photos.photo_reference = photoURL);
-      })
-      .catch(e => console.log(e));
-  });
 }
 
 module.exports = router;
