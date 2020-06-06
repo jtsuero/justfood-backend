@@ -72,17 +72,17 @@ function transformRestaurants(openRestaurants) {
       })
       .asPromise()
       .then(restaurant => {
+        let r = restaurant.json.result;
         return {
-          id: restaurant.json.result.place_id,
-          address: restaurant.json.result.formatted_address,
-          phone: restaurant.json.result.formatted_phone_number,
-          int_phone: restaurant.json.result.international_phone_number,
-          hours: restaurant.json.result.opening_hours.weekday_text,
-          name: restaurant.json.result.name,
+          id: r.place_id,
+          address: r.formatted_address,
+          phone: r.formatted_phone_number,
+          int_phone: r.international_phone_number,
+          hours: r.opening_hours ? r.opening_hours.weekday_text : null,
+          name: r.name,
           photos: getBusinessPhotos(restaurant),
-          open_now: restaurant.json.result.opening_hours.open_now,
-          coordinates: restaurant.json.result.geometry.location,
-          website: restaurant.json.result.website,
+          coordinates: r.geometry ? r.geometry.location : null,
+          website: r.website,
         };
       })
       .catch(e => console.log({message: e.message}));
