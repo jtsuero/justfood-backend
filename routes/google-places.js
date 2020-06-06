@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
         language: 'en',
         location: [req.query.lat, req.query.long],
         radius: parseInt(req.query.radius),
-        opennow: true,
+        opennow: req.query.open === 'true',
         keyword: req.query.keyword,
         type: 'restaurant',
       })
