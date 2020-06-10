@@ -50,7 +50,23 @@ router.get('/place', async (req, res) => {
       })
       .catch(e => res.status(400).json({message: e}));
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({message: err});
+  }
+});
+
+router.get('/geocode', async (req, res) => {
+  try {
+    return client
+      .geocode({
+        address: req.query.address,
+      })
+      .asPromise()
+      .then(googleResponse => {
+        res.json(googleResponse.json.results);
+      })
+      .catch(e => res.status(400).json({message: e}));
+  } catch (err) {
+    res.status(400).json({message: err});
   }
 });
 
