@@ -26,9 +26,9 @@ router.get('/', async (req, res) => {
           res.json({businesses: restaurants}),
         );
       })
-      .catch(e => res.status(400).json({message: e.message}));
+      .catch(e => res.status(400).json({message: e}));
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({message: err});
   }
 });
 
@@ -48,9 +48,25 @@ router.get('/place', async (req, res) => {
         googleResponse.json.result.photos = photoUrlArray;
         res.json({business: googleResponse});
       })
-      .catch(e => res.status(400).json({message: e.message}));
+      .catch(e => res.status(400).json({message: e}));
   } catch (err) {
-    res.status(400).json({message: err.message});
+    res.status(400).json({message: err});
+  }
+});
+
+router.get('/geocode', async (req, res) => {
+  try {
+    return client
+      .geocode({
+        address: req.query.address,
+      })
+      .asPromise()
+      .then(googleResponse => {
+        res.json(googleResponse.json.results);
+      })
+      .catch(e => res.status(400).json({message: e}));
+  } catch (err) {
+    res.status(400).json({message: err});
   }
 });
 
@@ -85,7 +101,7 @@ function transformRestaurants(openRestaurants) {
           website: r.website,
         };
       })
-      .catch(e => console.log({message: e.message}));
+      .catch(e => console.log({message: e}));
   });
   return Promise.all(businessRequests);
 }
