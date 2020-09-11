@@ -1,6 +1,7 @@
 require('dotenv/config');
 const express = require('express');
 const router = express.Router();
+const axios = require('axios');
 const client = require('@google/maps').createClient({
   key: process.env.API_KEY,
   Promise: Promise,
@@ -22,9 +23,10 @@ router.get('/', async (req, res) => {
       })
       .asPromise()
       .then(googleResponse => {
-        transformRestaurants(googleResponse.json.results).then(restaurants =>
-          res.json({businesses: restaurants}),
-        );
+        transformRestaurants(googleResponse.json.results, {
+          lat: req.query.lat,
+          long: req.query.long,
+        }).then(restaurants => res.json({businesses: restaurants}));
       })
       .catch(e => res.status(400).json({message: e}));
   } catch (err) {
@@ -79,7 +81,7 @@ function getBusinessPhotos(business) {
   }
 }
 
-function transformRestaurants(openRestaurants) {
+function transformRestaurants(openRestaurants, location) {
   const businessRequests = openRestaurants.map(restaurant => {
     return client
       .place({
@@ -87,7 +89,7 @@ function transformRestaurants(openRestaurants) {
         language: 'en',
       })
       .asPromise()
-      .then(restaurant => {
+      .then(async restaurant => {
         let r = restaurant.json.result;
         return {
           id: r.place_id,
@@ -96,6 +98,7 @@ function transformRestaurants(openRestaurants) {
           int_phone: r.international_phone_number,
           hours: r.opening_hours ? r.opening_hours.weekday_text : null,
           name: r.name,
+          distance: await getDistance(r.geometry.location, location),
           photos: getBusinessPhotos(restaurant),
           coordinates: r.geometry ? r.geometry.location : null,
           website: r.website,
@@ -104,6 +107,17 @@ function transformRestaurants(openRestaurants) {
       .catch(e => console.log({message: e}));
   });
   return Promise.all(businessRequests);
+}
+
+async function getDistance(restaurantLocation, location) {
+  try {
+    const response = await axios.get(
+      `https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins=${location.lat},${location.long}&destinations=${restaurantLocation.lat}%2C${restaurantLocation.lng}&key=${process.env.API_KEY}`,
+    );
+    return response.data.rows[0].elements;
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 module.exports = router;
